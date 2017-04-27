@@ -1,6 +1,6 @@
 import serial
 import serial_ports
-import comandoArduino
+from comandoArduino import CommandArduino
 from Tkinter import Tk, RIGHT, BOTH, RAISED, LEFT, Canvas, NW, Text, END
 from PIL import Image, ImageTk
 import commands
@@ -87,18 +87,23 @@ class App(Frame):
 	def Connect(self):
 		s = "connected to " + self.comboConnect.get()
 		print(s)
-		serialA = serial.Serial(self.comboConnect.get(), 115200, timeout=3)
+		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
 		sleep(2)
-		c = CommandArduino(ord('s'), 1, serialA)
+		state=1
+		c = CommandArduino("56", 2, serialA)
 		print(c.send())
+		self.printMessages("Connected: "+ self.comboConnect.get(), self.logName)
+		
 		
 	def sendDegreesM1(self):
 		m1 = int(self.degrees.get())+1000
+		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
 		if m1 != 0:
 			print(m1)
-		if serialA is not None:
-			m1command= CommandArduino(m1, 1, serialA)
-			m1command.send()
+		if serialA.isOpen():
+			m1command= CommandArduino(str(m1), 1, serialA)
+			#m1command.send()
+			self.printMessages("Sent: " + m1command.send(), self.logName)
 			
 				
 		else:
@@ -107,13 +112,15 @@ class App(Frame):
 		self.degrees.delete(0, END)
 		
 	def sendDegreesM2(self):
-		m2 = int(self.degrees2.get())
-		m2 += 2000
+		m2 = int(self.degrees2.get()) +2000
+		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
 		if m2 != 0:
 			print(m2)
-		if serialA is not None:
-			m2command= CommandArduino(m2, 1, serialA)
-			m2command.send()
+		if serialA.isOpen():
+			m2command= CommandArduino(str(m2), 1, serialA)
+			#m2command.send()
+			self.printMessages("Sent: " + m2command.send(), self.logName)
+			
 			
 				
 		else:

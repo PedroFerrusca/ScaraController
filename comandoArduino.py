@@ -1,6 +1,6 @@
 
 import serial
-
+from time import sleep
 class CommandArduino: # Clase comando para indicar los comandos neesarios del robot
 	
 	def __init__(self, code, times, serial1):
@@ -13,18 +13,19 @@ class CommandArduino: # Clase comando para indicar los comandos neesarios del ro
 		self.serialDev.flushInput()
 		self.serialDev.flushOutput()
 		for i in range(0, self.times):
-			self.serialDev.write(chr(self.code))
+			self.serialDev.write(self.code)
 			sleep(0.5)
 			print("Sent : " + self.code)
 			res = 0
 			while res ==0:
-				while self.serialDev.inWaiting() <= 0:
-					print self.serialDev.inWaiting()
-					pass
-				res = self.serialDev.read(1)
+##				while self.serialDev.inWaiting() <= 0:
+##					print self.serialDev.inWaiting()
+##					pass
+##				res = self.serialDev.read(1)
+				res = self.serialDev.readline()
 				print(res + " OK")
-				if(res != chr(self.code)):
-					self.serialDev.write(chr(self.code))
+				if(res != self.code):
+					self.serialDev.write(self.code)
 				return res
 	def setTimes(self, times):
 		self.times = times
