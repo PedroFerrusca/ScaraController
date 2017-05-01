@@ -9,7 +9,7 @@ from timeit import default_timer as timer
 from time import sleep
 serialA = None
 state = 0
-
+baudrate = 115200
 		
 class App(Frame):
 
@@ -57,18 +57,26 @@ class App(Frame):
 		self.botonera2 = Frame(self.mainFrame, borderwidth=1)
 		self.botonera3 = Frame(self.mainFrame, borderwidth=1)
 		self.botonera4 = Frame(self.mainFrame, borderwidth=1)
+		self.botonera5 = Frame(self.mainFrame, borderwidth=1)
+		self.botonera6 = Frame(self.mainFrame, borderwidth=1)
 		self.degrees = Entry(self.botonera2)
 		self.degrees2 = Entry(self.botonera3)
 		self.degrees3 = Entry(self.botonera4)
+		self.posX = Entry(self.botonera5)
+		self.posY = Entry(self.botonera5)
 		self.m1Button = Button(self.botonera2, text="M1", command=self.sendDegreesM1)
 		self.m1Button.pack(side=LEFT)
 		self.m2Button = Button(self.botonera3, text="M2", command=self.sendDegreesM2)
 		self.m2Button.pack(side=LEFT)
 		self.m3Button = Button(self.botonera4, text="M3", command=self.sendDegreesM3)
 		self.m3Button.pack(side=LEFT)
+		self.posXYButton = Button(self.botonera6, text="Position", command=self.sendPos)
+		self.posXYButton.pack(side=LEFT)
 		self.degrees.pack(side=LEFT)
 		self.degrees2.pack(side=LEFT)
 		self.degrees3.pack(side=LEFT)
+		self.posX.pack(side=LEFT)
+		self.posY.pack(side=LEFT)
 		
 	
 	def destroyStart(self):
@@ -78,6 +86,8 @@ class App(Frame):
 		self.botonera2.pack()
 		self.botonera3.pack()
 		self.botonera4.pack()
+		self.botonera5.pack()
+		self.botonera6.pack()
 		#self.mainCanvas.pack(fill=BOTH, side=LEFT)
 		self.mainText.pack(fill=BOTH, side=LEFT)
 		self.log = 'Send Commands'
@@ -87,17 +97,17 @@ class App(Frame):
 	def Connect(self):
 		s = "connected to " + self.comboConnect.get()
 		print(s)
-		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
+		serialA = serial.Serial(self.comboConnect.get(), baudrate, timeout=3)
 		sleep(2)
 		state=1
-		c = CommandArduino("56", 2, serialA)
+		c = CommandArduino("56", 1, serialA)
 		print(c.send())
 		self.printMessages("Connected: "+ self.comboConnect.get(), self.logName)
 		
 		
 	def sendDegreesM1(self):
-		m1 = int(self.degrees.get())+1000
-		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
+		m1 = (abs(int(self.degrees.get()))+1000)*(int(self.degrees.get())/abs(int(self.degrees.get())))
+		serialA = serial.Serial(self.comboConnect.get(), baudrate, timeout=3)
 		if m1 != 0:
 			print(m1)
 		if serialA.isOpen():
@@ -112,8 +122,8 @@ class App(Frame):
 		self.degrees.delete(0, END)
 		
 	def sendDegreesM2(self):
-		m2 = int(self.degrees2.get()) +2000
-		serialA = serial.Serial(self.comboConnect.get(), 9600, timeout=3)
+		m2 = (abs(int(self.degrees2.get()))+2000)*(int(self.degrees2.get())/abs(int(self.degrees2.get())))
+		serialA = serial.Serial(self.comboConnect.get(), baudrate, timeout=3)
 		if m2 != 0:
 			print(m2)
 		if serialA.isOpen():
@@ -129,7 +139,7 @@ class App(Frame):
 		self.degrees2.delete(0, END)
 
 	def sendDegreesM3(self):
-		m3 = int(self.degrees3.get()) + 3000
+		m3 = (abs(int(self.degrees3.get()))+3000)*(int(self.degrees3.get())/abs(int(self.degrees3.get())))
 		if m3 != 0:
 			print(m3)
 		if serialA is not None:
@@ -141,6 +151,8 @@ class App(Frame):
 			print("not connected")
 			self.printMessages("Not Connected, Command attempted: "+ str(m3) , self.logName)
 		self.degrees3.delete(0, END)
+	def sendPos(self):
+		print("pos")
 
 	def sendStop(self):
 		state =0
